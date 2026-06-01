@@ -18,8 +18,8 @@
                 <span class="team-badge"><i class="fa-solid fa-users"></i> Zespół: Project</span>
             </div>
             <div class="user-profile">
-                <span class="user-name">Cześć, Maria!</span>
-                <a href="#" class="btn-logout">Wyloguj się</a>
+                <span class="user-name" id="dashboard-user-name">Cześć!</span>
+                <a href="#" class="btn-logout" id="logout-button">Wyloguj się</a>
             </div>
         </header>
 
@@ -185,6 +185,26 @@
 
         </main>
     </div>
+    <script>
+    const userName = localStorage.getItem("name");
+
+    if (userName) {
+        document.getElementById("dashboard-user-name").textContent = `Cześć, ${userName}!`;
+    }
+
+    const logoutButton = document.getElementById("logout-button");
+
+    logoutButton.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("email");
+        localStorage.removeItem("name");
+
+        window.location.href = "login.html";
+    });
+    </script>
 </body>
 
 </html>
