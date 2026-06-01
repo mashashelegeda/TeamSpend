@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamSpend - Dashboard</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+
+        <header class="main-header">
+            <div class="logo">
+                <h1>TeamSpend</h1>
+                <span class="team-badge"><i class="fa-solid fa-users"></i> Zespół: Project</span>
+            </div>
+            <div class="user-profile">
+                <span class="user-name">Cześć, Maria!</span>
+                <a href="#" class="btn-logout">Wyloguj się</a>
+            </div>
+        </header>
+
+        <main class="dashboard-content">
+
+            <section class="stats-grid">
+                <div class="stat-card total-spent">
+                    <h3>Suma wydatków zespołu</h3>
+                    <p class="stat-value" id="total-amount">3 450.00 PLN</p>
+                </div>
+                <div class="stat-card top-spender">
+                    <h3>Najwięcej wydał(a)</h3>
+                    <p class="stat-value small" id="top-spender">Elizabet</p>
+                </div>
+                <div class="stat-card active-category">
+                    <h3>Główna kategoria</h3>
+                    <p class="stat-value small" id="top-category">Serwery</p>
+                </div>
+            </section>
+
+            <section class="middle-grid">
+
+                <div class="panel-box">
+                    <h3><i class="fa-solid fa-plus-circle"></i> Dodaj nowy wydatek</h3>
+                    <form id="expense-form" class="dashboard-form">
+                        <div class="form-group">
+                            <label for="expense-name">Nazwa wydatku</label>
+                            <input type="text" id="expense-name" placeholder="np. Subskrypcja GitHub, Kawa" required>
+                        </div>
+
+                        <div class="form-group-row">
+                            <div class="form-group">
+                                <label for="expense-amount">Kwota (PLN)</label>
+                                <input type="number" id="expense-amount" step="0.01" placeholder="0.00" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="expense-category">Kategoria</label>
+                                <div class="category-input-group">
+                                    <select id="expense-category" required>
+                                        <option value="" disabled selected>Wybierz...</option>
+                                        <option value="Serwery">Serwery</option>
+                                        <option value="Licencje">Licencje</option>
+                                        <option value="Biuro">Biuro</option>
+                                    </select>
+                                    <button type="button" class="btn-add-category"
+                                        title="Dodaj nową kategorię">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="expense-date">Data</label>
+                            <input type="date" id="expense-date" required>
+                        </div>
+
+                        <button type="submit" class="btn-primary">Dodaj do wspólnych wydatków</button>
+                    </form>
+                </div>
+
+                <div class="analytics-column">
+
+                    <div class="panel-box visualization-box">
+                        <h3><i class="fa-solid fa-chart-pie"></i> Wydatki wg kategorii</h3>
+                        <div class="chart-container">
+                            <div class="chart-placeholder">
+                                <i class="fa-solid fa-chart-line fa-2x"></i>
+                                <p>Miejsce na wykres kołowy (Chart.js)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-box leaderboard-box">
+                        <h3><i class="fa-solid fa-ranking-star"></i> Wydatki członków</h3>
+                        <div class="leaderboard-list">
+
+                            <div class="leaderboard-item">
+                                <div class="lb-info">
+                                    <span class="lb-name">Elizabet</span>
+                                    <span class="lb-amount">1 500 PLN</span>
+                                </div>
+                                <div class="lb-bar-bg">
+                                    <div class="lb-bar-fill" style="width: 80%; background: #6b7cb5;"></div>
+                                </div>
+                            </div>
+
+                            <div class="leaderboard-item">
+                                <div class="lb-info">
+                                    <span class="lb-name">Daria</span>
+                                    <span class="lb-amount">1 200 PLN</span>
+                                </div>
+                                <div class="lb-bar-bg">
+                                    <div class="lb-bar-fill" style="width: 65%; background: #8e9cc8;"></div>
+                                </div>
+                            </div>
+
+                            <div class="leaderboard-item">
+                                <div class="lb-info">
+                                    <span class="lb-name">Vitoria P.</span>
+                                    <span class="lb-amount">750 PLN</span>
+                                </div>
+                                <div class="lb-bar-bg">
+                                    <div class="lb-bar-fill" style="width: 40%; background: #b0bcdd;"></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <section class="panel-box table-section">
+                <div class="table-header">
+                    <h3><i class="fa-solid fa-list-check"></i> Ostatnie wydatki zespołu</h3>
+
+                    <div class="filters-container">
+                        <input type="text" id="search-input" placeholder="Szukaj po nazwie...">
+                        <select id="filter-user">
+                            <option value="all">Wszyscy członkowie</option>
+                            <option value="Daria">Daria</option>
+                            <option value="Elizabet">Elizabet</option>
+                            <option value="Vitoria">Vitoria</option>
+                            <option value="Mariia">Mariia</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="expenses-table">
+                        <thead>
+                            <tr>
+                                <th>Nazwa</th>
+                                <th>Kategoria</th>
+                                <th>Kto płacił</th>
+                                <th>Data</th>
+                                <th>Kwota</th>
+                                <th style="width: 80px;">Akcja</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expense-list">
+                            <tr>
+                                <td>Opłata za AWS (Czerwiec)</td>
+                                <td><span class="badge badge-servers">Serwery</span></td>
+                                <td><strong>Elizabet G.</strong></td>
+                                <td>2026-06-01</td>
+                                <td class="amount-cell">1500.00 PLN</td>
+                                <td><button class="btn-delete" title="Usuń"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Licencja WebStorm (Zespół)</td>
+                                <td><span class="badge badge-licenses">Licencje</span></td>
+                                <td><strong>Daria K.</strong></td>
+                                <td>2026-05-28</td>
+                                <td class="amount-cell">1200.00 PLN</td>
+                                <td><button class="btn-delete" title="Usuń"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+</body>
+
+</html>
