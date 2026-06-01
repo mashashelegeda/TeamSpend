@@ -1,0 +1,122 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+}
+
+.container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.left-panel {
+    flex: 1;
+    background-image: url("../assets/img/hero_bg.png");
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    width: 60%;
+
+    display: flex;
+    align-items: center;
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(40, 45, 80, 0.88);
+}
+
+.content {
+    position: relative;
+    z-index: 2;
+    color: white;
+    padding: 80px;
+    max-width: 700px;
+}
+
+.content h1 {
+    font-size: 72px;
+    margin-bottom: 25px;
+    font-weight: 700;
+}
+
+.content h2 {
+    font-size: 32px;
+    font-weight: 400;
+    margin-bottom: 30px;
+}
+
+.content p {
+    font-size: 20px;
+    line-height: 1.5;
+}
+
+.right-panel {
+    width: 500px;
+    background: white;
+    width: 40%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.right-panel h2 {
+    margin-bottom: 40px;
+    color: #a7afc4;
+    font-size: 42px;
+}
+
+.login-form {
+    width: 380px;
+    background: #d7dcef;
+    padding: 40px;
+    border-radius: 12px;
+}
+
+.login-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 18px;
+}
+
+.login-form input {
+    width: 100%;
+    height: 50px;
+    border: none;
+    border-radius: 10px;
+    padding: 0 15px;
+    margin-bottom: 25px;
+}
+
+.login-form button {
+    width: 180px;
+    height: 50px;
+    display: block;
+    margin: 20px auto;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #6b7cb5;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.login-form p {
+    text-align: center;
+}
+
+.login-form a {
+    color: black;
+    text-decoration: none;
+    font-weight: 600;
+}
