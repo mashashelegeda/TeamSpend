@@ -16,7 +16,7 @@ body {
 
 .left-panel {
     flex: 1;
-    background-image: url("../assets/img/hero_bg.png");
+    background-image: url('/assets/img/hero_bg.png');
     background-size: cover;
     background-position: center;
     position: relative;
