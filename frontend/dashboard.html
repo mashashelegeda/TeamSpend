@@ -7,6 +7,8 @@
     <title>TeamSpend - Dashboard</title>
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -28,7 +30,7 @@
             <section class="stats-grid">
                 <div class="stat-card total-spent">
                     <h3>Suma wydatków zespołu</h3>
-                    <p class="stat-value" id="total-amount">3 450.00 PLN</p>
+                    <p class="stat-value" id="total-amount">0.00 PLN</p>
                 </div>
                 <div class="stat-card top-spender">
                     <h3>Najwięcej wydał(a)</h3>
@@ -80,55 +82,19 @@
                 </div>
 
                 <div class="analytics-column">
-
                     <div class="panel-box visualization-box">
                         <h3><i class="fa-solid fa-chart-pie"></i> Wydatki wg kategorii</h3>
-                        <div class="chart-container">
-                            <div class="chart-placeholder">
-                                <i class="fa-solid fa-chart-line fa-2x"></i>
-                                <p>Miejsce na wykres kołowy (Chart.js)</p>
-                            </div>
+                        <div class="chart-container" style="position: relative; height:200px; width:100%;">
+                            <canvas id="expense-pie-chart"></canvas>
                         </div>
                     </div>
 
-                    <div class="panel-box leaderboard-box">
-                        <h3><i class="fa-solid fa-ranking-star"></i> Wydatki członków</h3>
-                        <div class="leaderboard-list">
-
-                            <div class="leaderboard-item">
-                                <div class="lb-info">
-                                    <span class="lb-name">Elizabet</span>
-                                    <span class="lb-amount">1 500 PLN</span>
-                                </div>
-                                <div class="lb-bar-bg">
-                                    <div class="lb-bar-fill" style="width: 80%; background: #6b7cb5;"></div>
-                                </div>
-                            </div>
-
-                            <div class="leaderboard-item">
-                                <div class="lb-info">
-                                    <span class="lb-name">Daria</span>
-                                    <span class="lb-amount">1 200 PLN</span>
-                                </div>
-                                <div class="lb-bar-bg">
-                                    <div class="lb-bar-fill" style="width: 65%; background: #8e9cc8;"></div>
-                                </div>
-                            </div>
-
-                            <div class="leaderboard-item">
-                                <div class="lb-info">
-                                    <span class="lb-name">Vitoria P.</span>
-                                    <span class="lb-amount">750 PLN</span>
-                                </div>
-                                <div class="lb-bar-bg">
-                                    <div class="lb-bar-fill" style="width: 40%; background: #b0bcdd;"></div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
+<div class="panel-box leaderboard-box">
+    <h3><i class="fa-solid fa-ranking-star"></i> Wydatki członków</h3>
+    
+    <div class="leaderboard-list" id="leaderboard-list">
+        </div>
+</div>
             </section>
 
             <section class="panel-box table-section">
@@ -148,43 +114,27 @@
                 </div>
 
                 <div class="table-wrapper">
-                    <table class="expenses-table">
-                        <thead>
-                            <tr>
-                                <th>Nazwa</th>
-                                <th>Kategoria</th>
-                                <th>Kto płacił</th>
-                                <th>Data</th>
-                                <th>Kwota</th>
-                                <th style="width: 80px;">Akcja</th>
-                            </tr>
-                        </thead>
-                        <tbody id="expense-list">
-                            <tr>
-                                <td>Opłata za AWS (Czerwiec)</td>
-                                <td><span class="badge badge-servers">Serwery</span></td>
-                                <td><strong>Elizabet G.</strong></td>
-                                <td>2026-06-01</td>
-                                <td class="amount-cell">1500.00 PLN</td>
-                                <td><button class="btn-delete" title="Usuń"><i class="fa-solid fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Licencja WebStorm (Zespół)</td>
-                                <td><span class="badge badge-licenses">Licencje</span></td>
-                                <td><strong>Daria K.</strong></td>
-                                <td>2026-05-28</td>
-                                <td class="amount-cell">1200.00 PLN</td>
-                                <td><button class="btn-delete" title="Usuń"><i class="fa-solid fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                   <table class="expenses-table">
+    <thead>
+        <tr>
+            <th>Nazwa</th>
+            <th>Kwota</th>
+            <th>Kategoria</th>
+            <th>Kto zapłacił</th>
+            <th>Data</th>
+            <th>Akcja</th>
+        </tr>
+    </thead>
+    
+    <tbody id="expenses-tbody">
+        </tbody>
+</table>
                 </div>
             </section>
 
         </main>
     </div>
+
     <script>
     const userName = localStorage.getItem("name");
 
@@ -205,6 +155,8 @@
         window.location.href = "login.html";
     });
     </script>
+    
+    <script src="dashboard-script.js"></script>
 </body>
 
 </html>
