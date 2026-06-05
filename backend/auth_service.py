@@ -198,6 +198,28 @@ def add_expense(expense: ExpenseCreate, authorization: str = Header(None)):
     conn.close()
     return {"message": "Wydatek został dodany"}
 
+@app.put("/expenses/{expense_id}")
+def update_expense(expense_id: int, expense: ExpenseCreate, authorization: str = Header(None)):
+    get_current_user_from_token(authorization)
+    
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id FROM expenses WHERE id = ?", (expense_id,))
+    if not cursor.fetchone():
+        conn.close()
+        raise HTTPException(status_code=404, detail="Nie znaleziono wydatku o podanym ID")
+
+    cursor.execute("""
+        UPDATE expenses 
+        SET name = ?, amount = ?, category = ?, date = ? 
+        WHERE id = ?
+    """, (expense.name, expense.amount, expense.category, expense.date, expense_id))
+    
+    conn.commit()
+    conn.close()
+    return {"message": "Wydatek został pomyślnie zaktualizowany"}
+
 @app.delete("/expenses/{expense_id}")
 def delete_expense(expense_id: int, authorization: str = Header(None)):
     get_current_user_from_token(authorization)

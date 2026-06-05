@@ -27,15 +27,12 @@
 
         <main class="dashboard-content">
 
-            <section class="stats-grid">
+            <section class="stats-grid-simplified">
                 <div class="stat-card total-spent">
                     <h3>Suma wydatków zespołu</h3>
                     <p class="stat-value" id="total-amount">0.00 PLN</p>
                 </div>
-                <div class="stat-card top-spender">
-                    <h3>Najwięcej wydał(a)</h3>
-                    <p class="stat-value small" id="top-spender">Elizabet</p>
-                </div>
+                
                 <div class="stat-card active-category">
                     <h3>Główna kategoria</h3>
                     <p class="stat-value small" id="top-category">Serwery</p>
@@ -66,8 +63,7 @@
                                         <option value="Licencje">Licencje</option>
                                         <option value="Biuro">Biuro</option>
                                     </select>
-                                    <button type="button" class="btn-add-category"
-                                        title="Dodaj nową kategorię">+</button>
+                                    <button type="button" class="btn-add-category" id="btn-add-category" title="Dodaj nową kategorię">+</button>
                                 </div>
                             </div>
                         </div>
@@ -77,58 +73,46 @@
                             <input type="date" id="expense-date" required>
                         </div>
 
-                        <button type="submit" class="btn-primary">Dodaj do wspólnych wydatków</button>
+                        <div class="form-actions">
+                            <button type="submit" id="submit-expense-btn" class="btn-primary">Dodaj do wspólnych wydatków</button>
+                            <button type="button" id="btn-cancel-edit" class="btn-cancel hidden">Anuluj edycję</button>
+                        </div>
                     </form>
                 </div>
 
                 <div class="analytics-column">
                     <div class="panel-box visualization-box">
                         <h3><i class="fa-solid fa-chart-pie"></i> Wydatki wg kategorii</h3>
-                        <div class="chart-container" style="position: relative; height:200px; width:100%;">
+                        <div class="chart-container" style="position: relative; height:240px; width:100%;">
                             <canvas id="expense-pie-chart"></canvas>
                         </div>
                     </div>
-
-<div class="panel-box leaderboard-box">
-    <h3><i class="fa-solid fa-ranking-star"></i> Wydatki członków</h3>
-    
-    <div class="leaderboard-list" id="leaderboard-list">
-        </div>
-</div>
+                </div>
             </section>
 
             <section class="panel-box table-section">
                 <div class="table-header">
-                    <h3><i class="fa-solid fa-list-check"></i> Ostatnie wydatki zespołu</h3>
-
+                    <h2>Wydatki zespołu</h2>
                     <div class="filters-container">
-                        <input type="text" id="search-input" placeholder="Szukaj po nazwie...">
-                        <select id="filter-user">
-                            <option value="all">Wszyscy członkowie</option>
-                            <option value="Daria">Daria</option>
-                            <option value="Elizabet">Elizabet</option>
-                            <option value="Vitoria">Vitoria</option>
-                            <option value="Mariia">Mariia</option>
-                        </select>
+                        <input type="text" id="search-input" placeholder="Szukaj wydatku lub kategorii..." />
                     </div>
                 </div>
 
                 <div class="table-wrapper">
-                   <table class="expenses-table">
-    <thead>
-        <tr>
-            <th>Nazwa</th>
-            <th>Kwota</th>
-            <th>Kategoria</th>
-            <th>Kto zapłacił</th>
-            <th>Data</th>
-            <th>Akcja</th>
-        </tr>
-    </thead>
-    
-    <tbody id="expenses-tbody">
-        </tbody>
-</table>
+                    <table class="expenses-table">
+                        <thead>
+                            <tr>
+                                <th>Nazwa</th>
+                                <th>Kwota</th>
+                                <th>Kategoria</th>
+                                <th>Kto zapłacił</th>
+                                <th>Data</th>
+                                <th>Akcja</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenses-tbody">
+                            </tbody>
+                    </table>
                 </div>
             </section>
 
@@ -146,12 +130,7 @@
 
     logoutButton.addEventListener("click", (e) => {
         e.preventDefault();
-
-        localStorage.removeItem("token");
-        localStorage.removeItem("user_id");
-        localStorage.removeItem("email");
-        localStorage.removeItem("name");
-
+        localStorage.clear();
         window.location.href = "login.html";
     });
     </script>

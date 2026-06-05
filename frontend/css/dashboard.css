@@ -17,7 +17,6 @@ body {
     min-height: 100vh;
 }
 
-/* HEADER STYLE */
 .main-header {
     background: rgba(40, 45, 80, 0.95);
     color: white;
@@ -53,7 +52,6 @@ body {
 }
 .btn-logout:hover { background: #6b7cb5; color: white; }
 
-/* MAIN CONTENT GRID */
 .dashboard-content {
     padding: 40px;
     max-width: 1400px;
@@ -64,8 +62,7 @@ body {
     gap: 30px;
 }
 
-/* CARDS SECTION */
-.stats-grid {
+.stats-grid-simplified {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
@@ -90,12 +87,10 @@ body {
 .stat-value { font-size: 32px; font-weight: 700; color: #282d50; }
 .stat-value.small { font-size: 24px; }
 .total-spent { border-left-color: #6b7cb5; }
-.top-spender { border-left-color: #8e9cc8; }
 
-/* MIDDLE BLOCKS: FORM & ANALYTICS */
 .middle-grid {
     display: grid;
-    grid-template-columns: 1.2fr 1fr; /* Левая форма чуть шире */
+    grid-template-columns: 1.2fr 1fr;
     gap: 30px;
 }
 
@@ -125,7 +120,6 @@ body {
     gap: 10px;
 }
 
-/* FORMS */
 .dashboard-form .form-group { margin-bottom: 20px; }
 .dashboard-form .form-group-row {
     display: grid;
@@ -156,7 +150,6 @@ body {
 .dashboard-form input:focus,
 .dashboard-form select:focus { border-color: #6b7cb5; }
 
-/* CATEGORY ADD BUTTON */
 .category-input-group {
     display: flex;
     gap: 10px;
@@ -179,9 +172,8 @@ body {
 }
 .btn-add-category:hover { background: #6b7cb5; color: white; }
 
-/* BUTTONS */
 .btn-primary {
-    width: 100%;
+    flex: 1; 
     height: 45px;
     border: none;
     border-radius: 10px;
@@ -191,51 +183,18 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s;
-    margin-top: 10px;
 }
 .btn-primary:hover { background: #53639c; }
 
-/* VISUALIZATION (PIE CHART) */
 .chart-container {
-    height: 200px;
+    height: 240px;
     background: #f4f6fa;
     border-radius: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.chart-placeholder { text-align: center; color: #6b7cb5; }
-.chart-placeholder p { margin-top: 10px; font-size: 14px; }
 
-/* LEADERBOARD */
-.leaderboard-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-.leaderboard-item { width: 100%; }
-.lb-info {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 5px;
-    font-size: 14px;
-    font-weight: 600;
-}
-.lb-amount { color: #6b7cb5; }
-.lb-bar-bg {
-    width: 100%;
-    height: 8px;
-    background: #d7dcef;
-    border-radius: 4px;
-    overflow: hidden;
-}
-.lb-bar-fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.5s ease;
-}
-
-/* TABLE SECTION */
 .table-header {
     display: flex;
     justify-content: space-between;
@@ -246,15 +205,6 @@ body {
 }
 
 .filters-container { display: flex; gap: 15px; }
-.filters-container input,
-.filters-container select {
-    height: 38px;
-    border: 2px solid #d7dcef;
-    border-radius: 8px;
-    padding: 0 10px;
-    outline: none;
-    font-size: 14px;
-}
 
 .table-wrapper { overflow-x: auto; }
 .expenses-table { width: 100%; border-collapse: collapse; text-align: left; }
@@ -289,3 +239,67 @@ body {
     transition: 0.2s;
 }
 .btn-delete:hover { color: #d32f2f; transform: scale(1.1); }
+
+#search-input {
+    width: 250px;
+    height: 38px;
+    border: 2px solid #d7dcef;
+    border-radius: 8px;
+    padding: 0 12px;
+    outline: none;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+#search-input:focus {
+    border-color: #6b7cb5;
+}
+
+.form-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 15px; 
+    align-items: center;
+    width: 100%;
+}
+
+.btn-cancel {
+    background-color: #a7afc4;
+    color: white;
+    border: none;
+    height: 45px; 
+    padding: 0 25px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-cancel:hover {
+    background-color: #8b94a8;
+}
+
+.btn-cancel:active {
+    transform: scale(0.98);
+}
+
+.btn-action-edit {
+    background: #6b7cb5;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    margin-right: 5px;
+    transition: background 0.2s;
+}
+
+.btn-action-edit:hover {
+    background: #526299;
+}
+
+.hidden {
+    display: none !important;
+}
