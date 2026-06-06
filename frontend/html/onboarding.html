@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamSpend - Konfiguracja Zespołu</title>
+    <link rel="stylesheet" href="../css/onboarding.css">
+</head>
+
+<body>
+
+    <div class="onboarding-container">
+        <header class="onboarding-header">
+            <h1 id="welcome-title">Cześć!</h1>
+            <p>Aby rozpocząć korzystanie z TeamSpend, utwórz własny zespół lub dołącz do istniejącego.</p>
+        </header>
+
+        <div class="onboarding-grid">
+            <section class="onboarding-card">
+                <h2>Stwórz nowy zespół</h2>
+                <p class="card-desc">Utwórz nowy zespół i zaproś uczestników do wspólnego zarządzania budżetem.</p>
+
+                <div class="form-group">
+                    <input type="text" id="team-name" placeholder="Nazwa zespołu" autocomplete="off">
+                    <button id="create-team-btn" class="btn-primary">Utwórz zespół</button>
+                </div>
+            </section>
+
+            <section class="onboarding-card">
+                <h2>Zaproszenia do zespołów</h2>
+                <p class="card-desc" id="invitations-status">Sprawdzanie oczekujących zaproszeń...</p>
+
+                <ul class="invitations-list" id="invitations-list">
+                </ul>
+            </section>
+        </div>
+    </div>
+
+    <script src="../js/onboarding.js"></script>
+</body>
+
+</html>
