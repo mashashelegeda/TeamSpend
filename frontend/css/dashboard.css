@@ -37,6 +37,49 @@ body {
     font-size: 12px;
     font-weight: 600;
 }
+.header-invite-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 450px; 
+    margin: 0 20px;
+}
+
+.header-invite-form input[type="email"] {
+    flex-grow: 1;
+    height: 38px;
+    padding: 0 12px;
+    border: 2px solid #d7dcef;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #d7e2fd;
+    background: #e7eaff52;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.header-invite-form input[type="email"]::placeholder {
+    color: #d7e2fd;
+}
+
+.header-invite-form input[type="email"]:focus {
+    border-color: #6b7cb5;
+}
+
+.btn-header-add {
+    height: 38px;
+    padding: 0 20px;
+    background: #6b7cb5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
 
 .user-profile { display: flex; align-items: center; gap: 20px; }
 .user-name { font-size: 16px; font-weight: 600; }
