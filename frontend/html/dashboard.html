@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamSpend - Dashboard</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-container">
+
+        <header class="main-header">
+            <div class="logo">
+                <h1>TeamSpend</h1>
+                <span class="team-badge"><i class="fa-solid fa-users"></i> Zespół: Project</span>
+            </div>
+            <div class="header-invite-form">
+                <input type="email" id="invite-email" placeholder="Wpisz email nowego uczestnika" autocomplete="off">
+                <button id="btn-send-invite" class="btn-header-add">Dodaj</button>
+            </div>
+            <div class="user-profile">
+                <span class="user-name" id="dashboard-user-name">Cześć!</span>
+                <a href="#" class="btn-logout" id="logout-button">Wyloguj się</a>
+            </div>
+        </header>
+
+        <main class="dashboard-content">
+
+            <section class="stats-grid-simplified">
+                <div class="stat-card total-spent">
+                    <h3>Suma wydatków zespołu</h3>
+                    <p class="stat-value" id="total-amount">0.00 PLN</p>
+                </div>
+
+                <div class="stat-card active-category">
+                    <h3>Główna kategoria</h3>
+                    <p class="stat-value small" id="top-category"></p>
+                </div>
+            </section>
+
+            <section class="middle-grid">
+
+                <div class="panel-box">
+                    <h3><i class="fa-solid fa-plus-circle"></i> Dodaj nowy wydatek</h3>
+                    <form id="expense-form" class="dashboard-form">
+                        <div class="form-group">
+                            <label for="expense-name">Nazwa wydatku</label>
+                            <input type="text" id="expense-name" placeholder="np. Subskrypcja GitHub, Kawa" required>
+                        </div>
+
+                        <div class="form-group-row">
+                            <div class="form-group">
+                                <label for="expense-amount">Kwota (PLN)</label>
+                                <input type="number" id="expense-amount" step="0.01" placeholder="0.00" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="expense-category">Kategoria</label>
+                                <div class="category-input-group">
+                                    <select id="expense-category" required>
+                                        <option value="" disabled selected>Wybierz...</option>
+                                        <option value="Serwery">Serwery</option>
+                                        <option value="Licencje">Licencje</option>
+                                        <option value="Biuro">Biuro</option>
+                                    </select>
+                                    <button type="button" class="btn-add-category" id="btn-add-category"
+                                        title="Dodaj nową kategorię">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="expense-date">Data</label>
+                            <input type="date" id="expense-date" required>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" id="submit-expense-btn" class="btn-primary">Dodaj do wspólnych
+                                wydatków</button>
+                            <button type="button" id="btn-cancel-edit" class="btn-cancel hidden">Anuluj edycję</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="analytics-column">
+                    <div class="panel-box visualization-box">
+                        <h3><i class="fa-solid fa-chart-pie"></i> Wydatki wg kategorii</h3>
+                        <div class="chart-container" style="position: relative; height:240px; width:100%;">
+                            <canvas id="expense-pie-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel-box table-section">
+                <div class="table-header">
+                    <h2>Wydatki zespołu</h2>
+                    <div class="filters-container">
+                        <input type="text" id="search-input" placeholder="Szukaj wydatku lub kategorii..." />
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="expenses-table">
+                        <thead>
+                            <tr>
+                                <th>Nazwa</th>
+                                <th>Kwota</th>
+                                <th>Kategoria</th>
+                                <th>Kto zapłacił</th>
+                                <th>Data</th>
+                                <th>Akcja</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenses-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        const userName = localStorage.getItem("name");
+
+        if (userName) {
+            document.getElementById("dashboard-user-name").textContent = `Cześć, ${userName}!`;
+        }
+
+        const logoutButton = document.getElementById("logout-button");
+
+        logoutButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = "login.html";
+        });
+    </script>
+
+    <script src="dashboard-script.js"></script>
+</body>
+
+</html>
