@@ -7,10 +7,12 @@ if (!token) {
 
 document.addEventListener("DOMContentLoaded", () => {
     const userName = localStorage.getItem("name");
+
     if (userName && document.getElementById("welcome-title")) {
         document.getElementById("welcome-title").textContent = `Cześć, ${userName}!`;
     }
 
+    fetchMyTeams();
     fetchInvitations();
 
     const createBtn = document.getElementById("create-team-btn");
@@ -18,6 +20,33 @@ document.addEventListener("DOMContentLoaded", () => {
         createBtn.addEventListener("click", handleCreateTeam);
     }
 });
+
+async function checkMyTeam() {
+    try {
+        const response = await fetch(`${API_URL}/teams/my`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            return;
+        }
+
+        if (data.has_team) {
+            localStorage.setItem("team_id", data.team_id);
+            localStorage.setItem("team_name", data.team_name);
+
+            window.location.href = "dashboard.html";
+        }
+
+    } catch (error) {
+        console.error(error);
+    }
+}
 
 async function handleCreateTeam() {
     const teamNameInput = document.getElementById("team-name");
@@ -29,7 +58,7 @@ async function handleCreateTeam() {
     }
 
     try {
-        const response = await fetch(`${API_URL}/teams/create`, {
+        const response = await fetch(`${API_URL}/teams`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -43,6 +72,9 @@ async function handleCreateTeam() {
         if (!response.ok) {
             throw new Error(data.detail || "Błąd podczas tworzenia zespołu");
         }
+        
+        localStorage.setItem("team_id", data.team_id);
+        localStorage.setItem("team_name", data.team_name);
 
         alert(`Zespół "${teamName}" został utworzony!`);
         window.location.href = "dashboard.html";
@@ -50,6 +82,59 @@ async function handleCreateTeam() {
     } catch (error) {
         alert(error.message);
     }
+}
+
+async function fetchMyTeams() {
+    const listContainer = document.getElementById("my-teams-list");
+
+    if (!listContainer) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/teams`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        const teams = await response.json();
+
+        if (!response.ok) {
+            throw new Error("Nie udało się pobrać zespołów");
+        }
+
+        listContainer.innerHTML = "";
+
+        if (teams.length === 0) {
+            listContainer.innerHTML = "<li>Nie należysz jeszcze do żadnego zespołu.</li>";
+            return;
+        }
+
+        teams.forEach(team => {
+            const li = document.createElement("li");
+            li.className = "invite-item";
+
+            li.innerHTML = `
+                <span>${team.name} <span style="color: #a7afc4; font-weight: normal; font-size: 12px;">(${team.role})</span></span>
+                <button class="btn-accept" onclick="selectTeam(${team.id}, '${team.name}')">Wejdź</button>
+            `;
+
+            listContainer.appendChild(li);
+        });
+
+    } catch (error) {
+        console.error(error);
+        listContainer.innerHTML = "<li>Nie udało się załadować zespołów.</li>";
+    }
+}
+
+function selectTeam(teamId, teamName) {
+    localStorage.setItem("team_id", teamId);
+    localStorage.setItem("team_name", teamName);
+
+    window.location.href = "dashboard.html";
 }
 
 async function fetchInvitations() {
@@ -98,7 +183,7 @@ async function fetchInvitations() {
 
 async function joinTeam(inviteId) {
     try {
-        const response = await fetch(`${API_URL}/teams/join/${inviteId}`, {
+        const response = await fetch(`${API_URL}/teams/invitations/${inviteId}/accept`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${token}`

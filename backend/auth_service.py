@@ -1,17 +1,16 @@
 from fastapi import FastAPI, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
-import sqlite3
 from passlib.context import CryptContext
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
-from fastapi.staticfiles import StaticFiles
+from database import get_db, init_db
+from expenses_service import register_expense_routes
+from team_service import register_team_routes
 
 SECRET_KEY = "teamspend-secret-key-2026"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
-DB_PATH = "teamspend.db"
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -25,125 +24,139 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 class UserRegister(BaseModel):
     name: str
     email: EmailStr
     password: str
 
+
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
-class ExpenseCreate(BaseModel):
-    name: str
-    amount: float
-    category: str
-    date: str
-
-def init_db():
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            email TEXT UNIQUE NOT NULL,
-            password_hash TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS expenses (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER NOT NULL,
-            user_name TEXT,
-            name TEXT NOT NULL,
-            amount REAL NOT NULL,
-            category TEXT NOT NULL,
-            date TEXT NOT NULL,
-            FOREIGN KEY (user_id) REFERENCES users (id)
-        )
-    """)
-
-    conn.commit()
-    conn.close()
-
 init_db()
-
-def get_db():
-    return sqlite3.connect(DB_PATH)
 
 def hash_password(password: str):
     return pwd_context.hash(password)
 
+
 def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
 
+
 def create_token(email: str, user_id: int):
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+
     data = {
         "sub": email,
         "user_id": user_id,
         "exp": expire
     }
+
     return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
+
 
 def get_current_user_from_token(authorization: str = Header(None)):
     if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Brak tokenu autoryzacyjnego lub token jest niepoprawny")
-    
+        raise HTTPException(
+            status_code=401,
+            detail="Brak tokenu autoryzacyjnego lub token jest niepoprawny"
+        )
+
     token = authorization.split(" ")[1]
+
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: int = payload.get("user_id")
-        email: str = payload.get("sub")
+
+        user_id = payload.get("user_id")
+        email = payload.get("sub")
+
         if user_id is None or email is None:
             raise HTTPException(status_code=401, detail="Nieprawidłowy token")
-        return {"user_id": user_id, "email": email}
+
+        return {
+            "user_id": user_id,
+            "email": email
+        }
+
     except JWTError:
-        raise HTTPException(status_code=401, detail="Token wygasł lub jest nieprawidłowy")
+        raise HTTPException(
+            status_code=401,
+            detail="Token wygasł lub jest nieprawidłowy"
+        )
 
 
 @app.get("/")
 def home():
     return {"message": "TeamSpend API działa"}
 
+
 @app.post("/auth/register", status_code=201)
 def register(user: UserRegister):
     if len(user.password) < 6:
-        raise HTTPException(status_code=400, detail="Hasło musi mieć minimum 6 znaków")
+        raise HTTPException(
+            status_code=400,
+            detail="Hasło musi mieć minimum 6 znaków"
+        )
 
     conn = get_db()
     cursor = conn.cursor()
-    cursor.execute("SELECT id FROM users WHERE email = ?", (user.email,))
+
+    cursor.execute(
+        "SELECT id FROM users WHERE email = ?",
+        (user.email,)
+    )
 
     if cursor.fetchone():
         conn.close()
-        raise HTTPException(status_code=400, detail="Email już istnieje")
+        raise HTTPException(
+            status_code=400,
+            detail="Email już istnieje"
+        )
 
     password_hash = hash_password(user.password)
+
     cursor.execute(
         "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
         (user.name, user.email, password_hash)
     )
+
+    user_id = cursor.lastrowid
+
     conn.commit()
     conn.close()
 
-    return {"message": "Użytkownik został zarejestrowany pomyślnie"}
+    token = create_token(user.email, user_id)
+
+    return {
+        "message": "Użytkownik został zarejestrowany pomyślnie",
+        "access_token": token,
+        "token_type": "bearer",
+        "user_id": user_id,
+        "name": user.name,
+        "email": user.email
+    }
 
 
 @app.post("/auth/login")
 def login(user: UserLogin):
     conn = get_db()
     cursor = conn.cursor()
-    cursor.execute("SELECT id, name, email, password_hash FROM users WHERE email = ?", (user.email,))
+
+    cursor.execute(
+        "SELECT id, name, email, password_hash FROM users WHERE email = ?",
+        (user.email,)
+    )
+
     db_user = cursor.fetchone()
     conn.close()
 
     if not db_user or not verify_password(user.password, db_user[3]):
-        raise HTTPException(status_code=401, detail="Nieprawidłowy email lub hasło")
+        raise HTTPException(
+            status_code=401,
+            detail="Nieprawidłowy email lub hasło"
+        )
 
     token = create_token(db_user[2], db_user[0])
 
@@ -156,80 +169,8 @@ def login(user: UserLogin):
     }
 
 
-@app.get("/expenses")
-def get_expenses(authorization: str = Header(None)):
-    get_current_user_from_token(authorization)
-    
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("SELECT id, user_id, user_name, name, amount, category, date FROM expenses")
-    rows = cursor.fetchall()
-    conn.close()
-
-    expenses = []
-    for row in rows:
-        expenses.append({
-            "id": row[0],
-            "user_id": row[1],
-            "user_name": row[2],
-            "name": row[3],
-            "amount": row[4],
-            "category": row[5],
-            "date": row[6]
-        })
-    return expenses
-
-
-@app.post("/expenses", status_code=201)
-def add_expense(expense: ExpenseCreate, authorization: str = Header(None)):
-    user_info = get_current_user_from_token(authorization)
-    
-    conn = get_db()
-    cursor = conn.cursor()
-   
-    cursor.execute("SELECT name FROM users WHERE id = ?", (user_info["user_id"],))
-    user_name = cursor.fetchone()[0]
-
-    cursor.execute(
-        "INSERT INTO expenses (user_id, user_name, name, amount, category, date) VALUES (?, ?, ?, ?, ?, ?)",
-        (user_info["user_id"], user_name, expense.name, expense.amount, expense.category, expense.date)
-    )
-    conn.commit()
-    conn.close()
-    return {"message": "Wydatek został dodany"}
-
-@app.put("/expenses/{expense_id}")
-def update_expense(expense_id: int, expense: ExpenseCreate, authorization: str = Header(None)):
-    get_current_user_from_token(authorization)
-    
-    conn = get_db()
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT id FROM expenses WHERE id = ?", (expense_id,))
-    if not cursor.fetchone():
-        conn.close()
-        raise HTTPException(status_code=404, detail="Nie znaleziono wydatku o podanym ID")
-
-    cursor.execute("""
-        UPDATE expenses 
-        SET name = ?, amount = ?, category = ?, date = ? 
-        WHERE id = ?
-    """, (expense.name, expense.amount, expense.category, expense.date, expense_id))
-    
-    conn.commit()
-    conn.close()
-    return {"message": "Wydatek został pomyślnie zaktualizowany"}
-
-@app.delete("/expenses/{expense_id}")
-def delete_expense(expense_id: int, authorization: str = Header(None)):
-    get_current_user_from_token(authorization)
-    
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM expenses WHERE id = ?", (expense_id,))
-    conn.commit()
-    conn.close()
-    return {"message": "Wydatek został pomyślnie usunięty"}
+register_expense_routes(app, get_db, get_current_user_from_token)
+register_team_routes(app, get_db, get_current_user_from_token)
 
 
 if __name__ == "__main__":

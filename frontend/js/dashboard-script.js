@@ -9,6 +9,10 @@ if (!token) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    setupLogout();
+    setupInvite();
+    setupUserGreeting();
+    setupTeamName();
     
     const addCategoryBtn = document.getElementById("btn-add-category");
     if (addCategoryBtn) {
@@ -66,6 +70,98 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+function setupTeamName() {
+    const teamName = localStorage.getItem("team_name");
+    const teamNameElement = document.getElementById("dashboard-team-name");
+
+    if (teamName && teamNameElement) {
+        teamNameElement.innerHTML = `<i class="fa-solid fa-users"></i> Zespół: ${teamName}`;
+    }
+}
+
+function setupUserGreeting() {
+    const userName = localStorage.getItem("name");
+    const userNameElement = document.getElementById("dashboard-user-name");
+
+    if (userName && userNameElement) {
+        userNameElement.textContent = `Cześć, ${userName}!`;
+    }
+}
+
+function setupLogout() {
+    const logoutButton = document.getElementById("logout-button");
+
+    if (!logoutButton) {
+        return;
+    }
+
+    logoutButton.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("email");
+        localStorage.removeItem("name");
+        localStorage.removeItem("team_id");
+        localStorage.removeItem("team_name");
+
+        window.location.href = "login.html";
+    });
+}
+
+function setupInvite() {
+    const inviteButton = document.getElementById("invite-button");
+
+    if (!inviteButton) {
+        return;
+    }
+
+    inviteButton.addEventListener("click", async () => {
+        const emailInput = document.getElementById("invite-email");
+        const email = emailInput.value.trim();
+
+        const token = localStorage.getItem("token");
+        const teamId = localStorage.getItem("team_id");
+
+        if (!email) {
+            alert("Wpisz email użytkownika");
+            return;
+        }
+
+        if (!teamId) {
+            alert("Najpierw wybierz zespół");
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/teams/${teamId}/invite`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    email: email
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.detail);
+                return;
+            }
+
+            alert(data.message);
+            emailInput.value = "";
+
+        } catch (error) {
+            console.error(error);
+            alert("Błąd połączenia z serwerem");
+        }
+    });
+}
+
 function applyFilters() {
     const searchInput = document.getElementById("search-input");
     const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : "";
@@ -79,10 +175,17 @@ function applyFilters() {
     renderStatsAndChart(filtered); 
 }
 
-// READ 
 async function fetchExpenses() {
     try {
-        const response = await fetch(`${API_URL}/expenses`, {
+        const teamId = localStorage.getItem("team_id");
+
+        if (!teamId) {
+            alert("Najpierw wybierz zespół");
+            window.location.href = "onboarding.html";
+            return;
+        }
+
+        const response = await fetch(`${API_URL}/expenses?team_id=${teamId}`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -90,7 +193,13 @@ async function fetchExpenses() {
         });
 
         if (response.status === 401) {
-            localStorage.clear();
+            localStorage.removeItem("token");
+            localStorage.removeItem("user_id");
+            localStorage.removeItem("email");
+            localStorage.removeItem("name");
+            localStorage.removeItem("team_id");
+            localStorage.removeItem("team_name");
+
             window.location.href = "login.html";
             return;
         }
@@ -98,8 +207,8 @@ async function fetchExpenses() {
         if (!response.ok) throw new Error("Nie udało się pobrać wydatków.");
 
         const expenses = await response.json();
-        globalExpenses = expenses; 
-        
+        globalExpenses = expenses;
+
         renderTable(expenses);
         renderStatsAndChart(expenses);
 
@@ -108,7 +217,6 @@ async function fetchExpenses() {
     }
 }
 
-// POST ORAZ PUT 
 async function handleFormSubmit(e) {
     e.preventDefault();
 
@@ -117,9 +225,18 @@ async function handleFormSubmit(e) {
     const categoryInput = document.getElementById("expense-category");
     const dateInput = document.getElementById("expense-date");
 
+    const teamId = localStorage.getItem("team_id");
+
+    if (!teamId) {
+        alert("Najpierw wybierz zespół");
+        window.location.href = "onboarding.html";
+        return;
+    }
+
     let rawDate = dateInput.value;
-    if (rawDate.includes('.')) {
-        const parts = rawDate.split('.');
+
+    if (rawDate.includes(".")) {
+        const parts = rawDate.split(".");
         if (parts[0].length === 2 && parts[2].length === 4) {
             rawDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
         }
@@ -129,11 +246,13 @@ async function handleFormSubmit(e) {
         name: nameInput.value.trim(),
         amount: parseFloat(amountInput.value),
         category: categoryInput.value,
-        date: rawDate
+        date: rawDate,
+        team_id: Number(teamId)
     };
 
     try {
         let response;
+
         if (editingExpenseId === null) {
             response = await fetch(`${API_URL}/expenses`, {
                 method: "POST",
@@ -160,7 +279,7 @@ async function handleFormSubmit(e) {
             throw new Error(detail);
         }
 
-        cancelEditMode(); 
+        cancelEditMode();
         fetchExpenses();
 
     } catch (error) {
@@ -217,16 +336,35 @@ function cancelEditMode() {
     }
 }
 
-// DELETE
 async function deleteExpense(id) {
-    if (!confirm("Czy na pewno chcesz usunąć ten wydatek?")) return;
+    if (!confirm("Czy na pewno chcesz usunąć ten wydatek?")) {
+        return;
+    }
+
+    const teamId = localStorage.getItem("team_id");
+
+    if (!teamId) {
+        alert("Najpierw wybierz zespół");
+        window.location.href = "onboarding.html";
+        return;
+    }
+
     try {
-        const response = await fetch(`${API_URL}/expenses/${id}`, {
+        const response = await fetch(`${API_URL}/expenses/${id}?team_id=${teamId}`, {
             method: "DELETE",
-            headers: { "Authorization": `Bearer ${token}` }
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
         });
-        if (!response.ok) throw new Error("Błąd podczas usuwania.");
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            const detail = errorData.detail || "Błąd podczas usuwania.";
+            throw new Error(detail);
+        }
+
         fetchExpenses();
+
     } catch (error) {
         alert(error.message);
     }

@@ -10,7 +10,7 @@ timeout /t 3 /nobreak > nul
 
 echo [2/2] Startowanie interfejsu (Frontend)...
 
-start "" "frontend\login.html"
+start "" "frontend\html\login.html"
 
 echo ===================================================
 echo   PROJEKT URUCHOMIONY POMYŚLNIE!

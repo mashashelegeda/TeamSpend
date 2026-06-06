@@ -64,11 +64,13 @@ registerButton.addEventListener("click", async () => {
             return;
         }
 
-        alert(data.message);
+        localStorage.setItem("token", data.access_token);
+        localStorage.setItem("user_id", data.user_id);
+        localStorage.setItem("email", data.email);
+        localStorage.setItem("name", data.name);
 
-        registerForm.style.display = "none";
-        loginForm.style.display = "block";
-        title.textContent = "Logowanie";
+        alert(data.message);
+        window.location.href = "onboarding.html";
 
     } catch (error) {
         alert("Błąd połączenia z serwerem");
@@ -111,7 +113,7 @@ loginButton.addEventListener("click", async () => {
         localStorage.setItem("name", data.name);
 
         alert("Zalogowano pomyślnie");
-        window.location.href = "dashboard.html";
+        window.location.href = "onboarding.html";
 
     } catch (error) {
         alert("Błąd połączenia z serwerem");

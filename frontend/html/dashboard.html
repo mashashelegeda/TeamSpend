@@ -17,14 +17,17 @@
         <header class="main-header">
             <div class="logo">
                 <h1>TeamSpend</h1>
-                <span class="team-badge"><i class="fa-solid fa-users"></i> Zespół: Project</span>
+                <span class="team-badge" id="dashboard-team-name">
+                   <i class="fa-solid fa-users"></i> Zespół
+                </span>
             </div>
             <div class="header-invite-form">
                 <input type="email" id="invite-email" placeholder="Wpisz email nowego uczestnika" autocomplete="off">
-                <button id="btn-send-invite" class="btn-header-add">Dodaj</button>
+                <button id="invite-button" class="btn-header-add">Dodaj</button>
             </div>
             <div class="user-profile">
                 <span class="user-name" id="dashboard-user-name">Cześć!</span>
+                <a href="onboarding.html" class="btn-logout">Zmień zespół</a>
                 <a href="#" class="btn-logout" id="logout-button">Wyloguj się</a>
             </div>
         </header>
@@ -125,23 +128,7 @@
         </main>
     </div>
 
-    <script>
-        const userName = localStorage.getItem("name");
-
-        if (userName) {
-            document.getElementById("dashboard-user-name").textContent = `Cześć, ${userName}!`;
-        }
-
-        const logoutButton = document.getElementById("logout-button");
-
-        logoutButton.addEventListener("click", (e) => {
-            e.preventDefault();
-            localStorage.clear();
-            window.location.href = "login.html";
-        });
-    </script>
-
-    <script src="dashboard-script.js"></script>
+    <script src="../js/dashboard-script.js"></script>
 </body>
 
 </html>
