@@ -112,7 +112,7 @@ loginButton.addEventListener("click", async () => {
         localStorage.setItem("email", data.email);
         localStorage.setItem("name", data.name);
 
-        alert("Zalogowano pomyślnie");
+
         window.location.href = "onboarding.html";
 
     } catch (error) {
