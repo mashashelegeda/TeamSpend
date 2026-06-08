@@ -72,7 +72,7 @@ async function handleCreateTeam() {
         if (!response.ok) {
             throw new Error(data.detail || "Błąd podczas tworzenia zespołu");
         }
-        
+
         localStorage.setItem("team_id", data.team_id);
         localStorage.setItem("team_name", data.team_name);
 
@@ -117,7 +117,7 @@ async function fetchMyTeams() {
             li.className = "invite-item";
 
             li.innerHTML = `
-                <span>${team.name} <span style="color: #a7afc4; font-weight: normal; font-size: 12px;">(${team.role})</span></span>
+                <span class="team-name">${team.name} <span style="color: #a7afc4; font-weight: normal; font-size: 12px;">(${team.role})</span></span>
                 <button class="btn-accept" onclick="selectTeam(${team.id}, '${team.name}')">Wejdź</button>
             `;
 
@@ -166,7 +166,7 @@ async function fetchInvitations() {
         invitations.forEach(invite => {
             const li = document.createElement("li");
             li.className = "invite-item";
-            li.style.marginBottom = "12px"; // Красивый отступ между плашками
+            li.style.marginBottom = "12px";
 
             li.innerHTML = `
                 <span>${invite.team_name} <span style="color: #a7afc4; font-weight: normal; font-size: 12px;">(od: ${invite.author})</span></span>
