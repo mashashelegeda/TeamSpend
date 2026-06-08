@@ -135,3 +135,28 @@ body {
     align-items: center;
     background: #f4f6fa;
 }
+.team-name {
+    font-weight: 600;
+    color: #282d50;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.team-name::before {
+    content: "📁";
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.btn-accept {
+    padding: 8px 16px;
+    background: #6b7cb5;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
